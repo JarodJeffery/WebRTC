@@ -18,14 +18,14 @@ io.on('connection', (socket) =>{
     /*console.log("User connected to socket io server");
     console.log(socket.id);*/
     connectedPeers.push(socket.id);
-    console.log(connectedPeers);
+    //console.log(connectedPeers);
     socket.on('disconnect', () =>{
-        console.log("User DC");
+        //console.log("User DC");
         const newConnectedPeers = connectedPeers.filter((peerSocketId) =>{
             peerSocketId !== socket.id;
         });
         connectedPeers = newConnectedPeers;
-        console.log(connectedPeers);
+        //console.log(connectedPeers);
     })
 });
 
