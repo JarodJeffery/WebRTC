@@ -3,6 +3,7 @@ import * as wss from './wss.js';
 import * as ui from './ui.js';
 import * as web from './webRTCHandler.js';
 import * as types from './constants.js';
+import { getIncomingCallDialog } from './elements.js';
 
 // initialization of socket io connection
 const socket = io('/');

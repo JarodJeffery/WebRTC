@@ -1,3 +1,4 @@
+const { Console } = require('console');
 const express = require('express');
 const http = require('http');
 const path = require('path');
@@ -19,13 +20,47 @@ io.on('connection', (socket) =>{
     console.log(socket.id);*/
     connectedPeers.push(socket.id);
     //console.log(connectedPeers);
+
+    socket.on("pre-offer", (data) =>{
+        console.log('Pre offer came');
+        console.log(data);
+
+        const {callType, calleePersonalCode} = data;
+
+        const connectedPeer = connectedPeers.find((peerSocketId) =>
+            peerSocketId === calleePersonalCode
+        );
+        
+        if(connectedPeer){
+            const data={
+                callerSocketId: socket.id,
+                callType,
+            };
+
+            io.to(calleePersonalCode).emit('pre-offer', data);
+        }
+    });
+
+    socket.on('pre-offer-answer', data =>{
+        console.log('pre-offer-answer-came');
+        console.log(data);
+
+        const connectedPeer = connectedPeers.find((peerSocketId) =>
+            peerSocketId === data.callerSocketId
+        );
+
+        if(connectedPeer){
+            io.to(data.callerSocketId).emit('pre-offer-answer', data);
+        }
+    });
+
     socket.on('disconnect', () =>{
-        //console.log("User DC");
+        
         const newConnectedPeers = connectedPeers.filter((peerSocketId) =>{
-            peerSocketId !== socket.id;
+             return peerSocketId !== socket.id;
         });
+
         connectedPeers = newConnectedPeers;
-        //console.log(connectedPeers);
     })
 });
 
