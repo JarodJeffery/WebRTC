@@ -1,4 +1,3 @@
-const { Console } = require('console');
 const express = require('express');
 const http = require('http');
 const path = require('path');
@@ -38,10 +37,15 @@ io.on('connection', (socket) =>{
             };
 
             io.to(calleePersonalCode).emit('pre-offer', data);
+        } else {
+            const data ={
+                preOfferAnswer: 'CALLEE_NOT_FOUND'
+            };
+            io.to(socket.id).emit('pre-offer-answer', data);
         }
     });
 
-    socket.on('pre-offer-answer', data =>{
+    socket.on('pre-offer-answer', (data) =>{
         console.log('pre-offer-answer-came');
         console.log(data);
 
@@ -51,6 +55,17 @@ io.on('connection', (socket) =>{
 
         if(connectedPeer){
             io.to(data.callerSocketId).emit('pre-offer-answer', data);
+        }
+    });
+
+    socket.on('webRTC-signaling', (data) =>{
+        const { connectedUserSocketId } = data;
+        const connectedPeer = connectedPeers.find((peerSocketId) =>
+            peerSocketId === connectedUserSocketId
+        );
+
+        if(connectedPeer){
+            io.to(connectedUserSocketId).emit('webRTC-signaling', data);
         }
     });
 

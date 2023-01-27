@@ -9,6 +9,7 @@ import { getIncomingCallDialog } from './elements.js';
 const socket = io('/');
 wss.registerSocketEvents(socket);
 
+web.getLocalPreview();
 //registering event listener for personal code copy button
 const copyButton = document.getElementById('personal_code_copy_button');
 copyButton.addEventListener("click", () =>{

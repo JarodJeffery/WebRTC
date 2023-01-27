@@ -85,3 +85,31 @@ export const getCallingDialog =(callingDialogRejectCallHandler) =>{
 
     return dialog;
 }
+
+export const getInfoDialog =(dialogTitle, description) =>{
+    const dialog = document.createElement('div');
+    dialog.classList.add('dialog_wrapper');
+    const dialogContent = document.createElement('div');
+    dialogContent.classList.add("dialog_content");
+    dialog.appendChild(dialogContent);
+    const title =document.createElement('p');
+    title.classList.add('dialog_title');
+    title.innerHTML = dialogTitle;
+
+    const imageContainer = document.createElement('div');
+    imageContainer.classList.add('dialog_image_container');
+    const image = document.createElement('img');
+    const imgPath = './utils/images/dialogAvatar.png';
+    image.src = imgPath;
+    imageContainer.appendChild(image);
+
+    const des = document.createElement('p');
+    des.classList.add('dialog_description');
+    des.innerHTML= description;
+
+    dialogContent.appendChild(title);
+    dialogContent.appendChild(imageContainer);
+    dialogContent.appendChild(des);
+
+    return dialog;
+}   
