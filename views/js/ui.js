@@ -1,5 +1,6 @@
 import * as constants from './constants.js';
 import * as elem from './elements.js';
+import * as rec from './recordingUtils.js';
 
 export const updateLocalVideo=(stream) =>{
     const localVideo = document.getElementById('local_video');
@@ -107,6 +108,66 @@ const showVideoCallElements = () => {
     showElement(newMessageInput);
 
     disableDashboard();
+}
+
+//ui call buttons
+
+const micOnimageSrc ='./utils/images/mic.png';
+const micOffImagesrc = './utils/images/micOff.png';
+const camButtonImgSrcOn = './utils/images/camera.png';
+const camButtonImgSrcOff =  './utils/images/cameraOff.png';
+
+export const updateMicButton = (micEnable) =>{
+    const micButtonImage = document.getElementById('mic_button_image');
+    micButtonImage.src = micEnable ? micOffImagesrc : micOnimageSrc ;
+};
+
+export const updateCameraButton = (cameraEnable) =>{
+    const cameraButtonImage = document.getElementById('camera_button_image');
+    cameraButtonImage.src = cameraEnable ? camButtonImgSrcOff : camButtonImgSrcOn;
+};
+
+//ui messages
+
+export const appendMessage =(message, right= false) =>{
+    const messageContainer = document.getElementById('messages_container');
+    const messageElement = right ? elem.getRightMessage(message): elem.getLeftMessage(message);
+    messageContainer.appendChild(messageElement);
+}
+
+export const clearMessanger =() =>{
+    const messageContainer = document.getElementById('messages_container');
+    messageContainer.querySelectorAll('*').forEach((n) => n.remove());
+}
+
+//recording
+
+export const showRecordingPanel =() =>{
+    const recButton = document.getElementById('video_recording_buttons');
+    showElement(recButton);
+
+    // hide start rec button if active
+    const startRec = document.getElementById('start_recording_button');
+    hideElement(startRec);
+}
+
+export const resetRecButton =() =>{
+    const startRec = document.getElementById('start_recording_button');
+    showElement(startRec);
+    const recButton = document.getElementById('video_recording_buttons');
+    hideElement(recButton);
+}
+
+export const switchRecButtions =(switchResButton = false) =>{
+    const resButton = document.getElementById('resume_recording_button');
+    const pauseButton =document.getElementById('pause_recording_button');
+    if(switchResButton){
+        hideElement(pauseButton);
+        showElement(resButton);
+    }else{
+        hideElement(resButton);
+        showElement(pauseButton);
+    }
 }
 
 //ui helper functions

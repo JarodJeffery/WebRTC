@@ -5,7 +5,8 @@ import * as store from'./store.js';
 
 let connectedUserDetails;
 let peerConnection;
-
+let screenSharingStream;
+let dataChannel;
 const defualtConstraints ={
     audio: true,
     video:true
@@ -35,10 +36,31 @@ export const getLocalPreview =() =>{
 const createPeerConnection=() =>{
     peerConnection = new RTCPeerConnection(configuration);
 
+    dataChannel = peerConnection.createDataChannel("chat");
+
+    peerConnection.ondatachannel =(event) =>{
+        const dataChannel = event.channel;
+
+        dataChannel.onopen =() =>{
+            console.log('peer connection ready to recieve messages');
+        }
+
+        dataChannel.onmessage =(event) =>{
+            console.log('message cmae from data channel');
+            const message =JSON.parse(event.data);
+            ui.appendMessage(message);
+        }
+    }
+
     peerConnection.onicecandidate = (event) =>{
         console.log('getting ice candidate from stun server')
         if(event.candidate){
             //send ice candidate to other user
+            wss.sendDataUsingWebRTCSignaling({
+                connectedUserSocketId: connectedUserDetails.socketId,
+                type: co.WebRTCSignaling.ICE_CANDIDATE,
+                candidate: event.candidate
+            });
         }
     }
 
@@ -66,6 +88,11 @@ const createPeerConnection=() =>{
         }
     }
 };
+
+export const sendMessageUsingDataChannel =(message) =>{
+    const stringifedMessage = JSON.stringify(message);
+    dataChannel.send(stringifedMessage);
+}
 
 export const sendPreOffer = (calleePersonalCode, callType) => {
     connectedUserDetails ={
@@ -148,6 +175,60 @@ export const handleWebRTCAnswer = async(data) =>{
     console.log(data);
     await peerConnection.setRemoteDescription(data.answer);
 };
+
+export const handleWebRTCCandidate = async (data) =>{
+    console.log('handling incoming webRTC candidate');
+    try{
+        await peerConnection.addIceCandidate(data.candidate);
+    }catch(err){
+        console.log('error occured when trying to add recieved ICE candidate', err);
+    }
+}
+
+export const switchBetweenCameraAndScreenSharing = async (screenSharingActive) =>{
+    if(screenSharingActive){
+        console.log('switching back for screen sharing');
+        const localStream = store.getState().localStream;
+        const senders = peerConnection.getSenders();
+
+        const sender = senders.find((sender) =>{
+            console.log( localStream.getVideoTracks());
+            return sender.track.kind === localStream.getVideoTracks()[0].kind;
+        });
+
+        if(sender){
+            sender.replaceTrack(localStream.getVideoTracks()[0]);
+        }
+        //stop screen sharing window
+        store.getState().screenSharingStream.getTracks()
+        .forEach((track) =>{track.stop()});
+        store.setScreenSharing(!screenSharingActive);
+        ui.updateLocalVideo(localStream);
+    } else {
+        console.log('switching for screen sharing');
+        try{
+            screenSharingStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true
+            });
+            store.setScreenSharingStream(screenSharingStream);
+            //replace track that sender is sending 
+            const senders =peerConnection.getSenders();
+            const sender = senders.find((sender) =>{
+                return sender.track.kind === screenSharingStream.getVideoTracks()[0].kind;
+            });
+            if(sender){
+                sender.replaceTrack(screenSharingStream.getVideoTracks()[0]);
+            }
+            
+
+            store.setScreenSharing(!screenSharingActive);
+
+            ui.updateLocalVideo(screenSharingStream);
+        }catch(err){
+            console.log('error occured when switching screens', err);
+        }
+    }
+}
 
 const acceptCallhandler =() =>{
     console.log('call accepted');

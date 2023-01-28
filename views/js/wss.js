@@ -30,8 +30,13 @@ export const registerSocketEvents =(socket) => {
                 break;
             case con.WebRTCSignaling.ANSWER:
                 web.handleWebRTCAnswer(data);
-                defualt:
-                    return ;
+                break;
+            case con.WebRTCSignaling.ICE_CANDIDATE:
+                web.handleWebRTCCandidate(data);
+                break;
+            defualt:
+                return ;
+                
         }
     });
 };
