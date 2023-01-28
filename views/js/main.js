@@ -124,3 +124,15 @@ resRecButton.addEventListener('click', () =>{
     rec.resumeRec();
     ui.switchRecButtions();
 });
+
+// hang up
+
+const hangUpButton = document.getElementById('hang_up_button');
+hangUpButton.addEventListener('click',() =>{
+    web.handleHangUp();
+});
+
+const chatHangUp = document.getElementById('finish_chat_call_button');
+chatHangUp.addEventListener('click', () =>{
+    web.handleHangUp();
+});

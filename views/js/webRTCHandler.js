@@ -255,3 +255,33 @@ const sendPreOfferAnswer = (preOfferAnswer) =>{
     wss.sendPreOfferAnswer(data);
 }
 
+//hangup
+
+export const handleHangUp =() =>{
+    const data ={
+        connectedUserSocketId : connectedUserDetails.socketId
+    }
+    wss.sendUserHangUp(data);
+    closePeerConnectionAndResetState();
+}
+
+export const handleConnectedUserHangedUp = () =>{
+    closePeerConnectionAndResetState();
+}
+
+const closePeerConnectionAndResetState =() =>{
+    if(peerConnection){
+        peerConnection.close();
+        peerConnection= null;
+    }
+
+    //active mic and camera
+    if(connectedUserDetails.callType === co.callType.VIDEO_PERSONAL_CODE || 
+        connectedUserDetails.callType === co.callType.VIDEO_STRANGER)
+    {
+        store.getState().localStream.getVideoTracks()[0] = true;
+        store.getState().localStream.getAudioTracks()[0] = true;
+    }
+    ui.updateUIAfterHangUp(connectedUserDetails.callType);
+    connectedUserDetails =null;
+}
