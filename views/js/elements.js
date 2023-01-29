@@ -1,7 +1,7 @@
 import * as ui from './ui.js';
 
 export const getIncomingCallDialog = (callTypeInfo,  acceptCallhandler, rejectCallHandler) =>{
-    console.log('getting incoming call dialog');
+    //console.log('getting incoming call dialog');
     const dialog = document.createElement('div');
     dialog.classList.add('dialog_wrapper');
     const dialogContent = document.createElement('div');
@@ -51,7 +51,7 @@ export const getIncomingCallDialog = (callTypeInfo,  acceptCallhandler, rejectCa
 }
 
 export const getCallingDialog =(callingDialogRejectCallHandler) =>{
-    console.log('getting incoming call dialog');
+    //console.log('getting incoming call dialog');
     const dialog = document.createElement('div');
     dialog.classList.add('dialog_wrapper');
     const dialogContent = document.createElement('div');
@@ -83,6 +83,9 @@ export const getCallingDialog =(callingDialogRejectCallHandler) =>{
     dialogContent.appendChild(imageContainer);
     dialogContent.appendChild(buttonContainer);
 
+    rejectButton.addEventListener('click' ,()=>{
+        callingDialogRejectCallHandler();
+    })
     return dialog;
 }
 

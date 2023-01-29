@@ -4,6 +4,8 @@ import * as ui from './ui.js';
 import * as web from './webRTCHandler.js';
 import * as types from './constants.js';
 import * as rec from './recordingUtils.js';
+import * as stranger from'./strangerUtils.js';
+import * as constaints from './constants.js';
 
 // initialization of socket io connection
 const socket = io('/');
@@ -27,29 +29,32 @@ const strangerVideoButton = document.getElementById('stanger_video_button');
 personalCodeChatButton.addEventListener("click", () =>{
     const calleePersonalCode = document.getElementById('personal_code_input').value;
     const callType = types.callType.CHAT_PERSONAL_CODE;
-    console.log("chat button clicked");
+    //console.log("chat button clicked");
     web.sendPreOffer(calleePersonalCode, callType);
 });
 
 personalCodeVideoButton.addEventListener("click", () =>{
     const calleePersonalCode = document.getElementById('personal_code_input').value;
     const callType = types.callType.VIDEO_PERSONAL_CODE;
-    console.log("chat button clicked");
+    //console.log("chat button clicked");
     web.sendPreOffer(calleePersonalCode, callType);
 });
 
 strangerChatButton.addEventListener("click", () =>{
-    const calleePersonalCode = document.getElementById('personal_code_input').value;
-    const callType = types.callType.CHAT_STRANGER;
-    console.log("chat button clicked");
-    web.sendPreOffer(calleePersonalCode, callType);
+    stranger.getStrangerSocketIdAndConnect(constaints.callType.CHAT_STRANGER);
 });
 
 strangerVideoButton.addEventListener("click", () =>{
-    const calleePersonalCode = document.getElementById('personal_code_input').value;
-    const callType = types.callType.VIDEO_STRANGER;
-    console.log("chat button clicked");
-    web.sendPreOffer(calleePersonalCode, callType);
+    stranger.getStrangerSocketIdAndConnect(constaints.callType.VIDEO_STRANGER);
+});
+
+//allow wconnections from strangers
+const checkBox = document.getElementById('allow_strangers_checkbox');
+checkBox.addEventListener('click',() =>{
+    const checkBoxState = store.getState().allowConnectionFromStrangers;
+    ui.updateStrangerCheckBox(checkBoxState);
+    store.setAllowConnectionFromStrangers(!checkBoxState);
+    stranger.changeStrangerConnectionStatus(!checkBoxState);
 });
 
 
@@ -81,7 +86,7 @@ screeenShareButton.addEventListener('click',() =>{
 
 const newMessageInput = document.getElementById('new_message_input');
 newMessageInput.addEventListener('keydown', (event) =>{
-    console.log('change occured');
+    //console.log('change occured');
     const key =event.key;
 
     if(key === "Enter"){

@@ -2,13 +2,14 @@ import * as store from './store.js';
 import * as ui from './ui.js';
 import * as web from './webRTCHandler.js';
 import * as con from './constants.js';
+import * as stranger from './strangerUtils.js';
 
 let socketIO = null;
 
 export const registerSocketEvents =(socket) => {
     socketIO = socket;
     socket.on('connect', () =>{
-        console.log('sucessully connected to socket.io server');
+        //console.log('sucessully connected to socket.io server');
         store.setSocketId(socket.id);
         ui.updatePersonalCode(socket.id);
     });
@@ -28,7 +29,7 @@ export const registerSocketEvents =(socket) => {
     });
 
     socket.on('webRTC-signaling', (data)=>{
-        console.log('recieved data');
+        //console.log('recieved data');
         switch(data.type){
             case con.WebRTCSignaling.OFFER:
                 web.handleWebRTCOffer(data);
@@ -43,10 +44,14 @@ export const registerSocketEvents =(socket) => {
                 return;                
         }
     });
+
+    socket.on('stranger-socket-id' , (data) =>{
+        stranger.connectWithStranger(data);
+    });
 };
 
 export const sendPreOffer = (data) =>{
-    console.log('emmiting to server preoffer event');
+    //console.log('emmiting to server preoffer event');
     socketIO.emit("pre-offer", data);
 };
 
@@ -60,4 +65,12 @@ export const sendDataUsingWebRTCSignaling = (data) =>{
 
 export const sendUserHangUp =(data)=>{
     socketIO.emit('user-hanged-up', data);
+}
+
+export const changeStrangerConnectionStatus = (data) =>{
+    socketIO.emit('stranger-connection-status', data);
+}
+
+export const getStrangerSocketId =() =>{
+    socketIO.emit('get-stranget-socket-id');
 }

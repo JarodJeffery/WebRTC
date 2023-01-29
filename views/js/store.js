@@ -1,3 +1,5 @@
+import * as con from './constants.js';
+
 let state ={
     socketId: null,
     localStream: null,                  //access to cam and mic
@@ -5,7 +7,7 @@ let state ={
     screenSharingStream: null,
     screenSharingActive: false,
     allowConnectionFromStrangers: false,
-    callState: null
+    callState: con.callState.CALL_AVAILABLE_ONLY_CHAT
 };
 
 export const setSocketId =(socketId) =>{
@@ -49,6 +51,13 @@ export const setScreenSharingStream =(stream) =>{
         ...state,
         screenSharingStream: stream      
     };
+};
+
+export const setCallState =(callState) =>{
+    state ={
+        ...state,
+        callState : callState
+    }
 };
 
 export const getState = () =>{

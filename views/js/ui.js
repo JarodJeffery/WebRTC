@@ -1,6 +1,7 @@
 import * as constants from './constants.js';
 import * as elem from './elements.js';
 import * as rec from './recordingUtils.js';
+import * as store from './store.js';
 
 export const updateLocalVideo=(stream) =>{
     const localVideo = document.getElementById('local_video');
@@ -10,6 +11,13 @@ export const updateLocalVideo=(stream) =>{
         localVideo.play();
     })
 };
+
+export const showVideoCallButtons =() =>{
+    const personalVideo = document.getElementById('personal_code_video_button');
+    const strangerVideo = document.getElementById('stanger_video_button');
+    showElement(personalVideo);
+    showElement(strangerVideo);
+}
 
 export const updateRemoteVideo=(stream) =>{
     const remoteVideo = document.getElementById('remote_video');
@@ -41,6 +49,17 @@ export const showCallingDialog = (callingDialogRejectCallHandler) =>{
 
     dialog.appendChild(callingDialog);
 };
+
+export const showNoStrangerAvailableDialog =() =>{
+    const infoDialog = elem.getInfoDialog('No Strangers Available', 'You all alone you lonely loner hahaha');
+    if(infoDialog){
+        const dialog = document.getElementById('dialog');
+        dialog.appendChild(infoDialog);
+        setTimeout(() =>{
+            removeAllDialog();
+        } , [4000]);//4 seconds
+    } 
+}
 
 export const showInfoDialog = (preOfferAnswer) =>{
     let infoDialog = null;
@@ -75,11 +94,11 @@ export const removeAllDialog = () =>{
 };
 
 export const showCallElements = (callType) =>{
-    if(callType === constants.callType.CHAT_PERSONAL_CODE){
+    if(callType === constants.callType.CHAT_PERSONAL_CODE || callType === constants.callType.CHAT_STRANGER){
         showChatCallElements();
     }
 
-    if(callType === constants.callType.VIDEO_PERSONAL_CODE){
+    if(callType === constants.callType.VIDEO_PERSONAL_CODE || callType === constants.callType.VIDEO_STRANGER){
         showVideoCallElements();
     }
 }
@@ -198,6 +217,14 @@ export const updateUIAfterHangUp =(callType) =>{
     hideElement(remoteVideo);
 }
 
+
+//update checkbox
+
+export const updateStrangerCheckBox =(checkBoxState) =>{
+    const checkBoxCheckImg = document.getElementById('allow_strangers_checkbox_image');
+    !checkBoxState ? showElement(checkBoxCheckImg): hideElement(checkBoxCheckImg);
+}
+
 //ui helper functions
 
 const enableDashboard =() =>{
@@ -218,11 +245,10 @@ const hideElement = (element)=>{
     if(!element.classList.contains('display_none')){
         element.classList.add('display_none');
     }
-}
+};
 
 const showElement = (element)=>{
     if(element.classList.contains('display_none')){
         element.classList.remove('display_none');
     }
-}
-
+};
